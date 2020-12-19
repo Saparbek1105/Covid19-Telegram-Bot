@@ -1,0 +1,63 @@
+импортный  телебот
+от  telebot  импортных  типов
+импорт  COVID19Py
+
+
+covid19  =  COVID19Py . COVID19 ()
+бот  =  телебот . TeleBot ( '1407907835: AAGrSVD46iHOx7d_5D0RkKb5nX6EIOUXxKU' )
+
+# Функция, что сработает при отправке команды Старт
+# Здесь мы создаем быстрые кнопки, а также сообщение с привествием
+@ бот . message_handler ( commands = [ 'начало' ])
+def  start ( сообщение ):
+	разметка  =  типы . ReplyKeyboardMarkup ( resize_keyboard = True , row_width = 2 )
+	btn1  =  типы . KeyboardButton ( «Казахстан» )
+	btn2  =  типы . KeyboardButton ( Япония )
+	btn3  =  типы . KeyboardButton ( 'Россия' )
+	btn4  =  типы . KeyboardButton ( 'США' )
+	разметка . добавить ( btn1 , btn2 , btn3 , btn4 )
+
+	send_message  =  f "<b> Привет { message . from_user . first_name } ! </b> \ n Чтобы узнать данные про коронавируса напишите" \
+		f "название страны, например: Казахстан США, Россия и так далее \ n "
+	бот . send_message ( сообщение . чат . id , send_message , parse_mode = 'html' , reply_markup = разметка )
+
+# Функция, что сработает при отправке какого-либо текста боту
+# Здесь мы создаем набор данных и вывод статистики по стране
+@ бот . message_handler ( content_types = [ 'текст' ])
+def  mess ( сообщение ):
+	final_message  =  ""
+	get_message_bot  =  сообщение . текст . полоса (). нижний ()
+	если  get_message_bot  ==  "сша" :
+		location  =  covid19 . getLocationByCountryCode ( "США" )
+	elif  get_message_bot  ==  "украина" :
+		location  =  covid19 . getLocationByCountryCode ( "UA" )
+	elif  get_message_bot  ==  "россия" :
+		location  =  covid19 . getLocationByCountryCode ( «RU» )
+	elif  get_message_bot  ==  "беларусь" :
+		location  =  covid19 . getLocationByCountryCode ( "ПО" )
+	elif  get_message_bot  ==  "казахстан" :
+		location  =  covid19 . getLocationByCountryCode ( "KZ" )
+	elif  get_message_bot  ==  "италия" :
+		location  =  covid19 . getLocationByCountryCode ( "ИТ" )
+	elif  get_message_bot  ==  "франция" :
+		location  =  covid19 . getLocationByCountryCode ( "FR" )
+	elif  get_message_bot  ==  "германия" :
+		location  =  covid19 . getLocationByCountryCode ( "DE" )
+	elif  get_message_bot  ==  "япония" :
+		location  =  covid19 . getLocationByCountryCode ( "JP" )
+	еще :
+		location  =  covid19 . getLatest ()
+	#final_message = f "<u> Данные по всему миру: </u> \ n <b> Заболевших: </b> {местоположение ['подтверждено']:,} \ n <b> Сметрей: </b> { location ['deaths'] :,} "
+
+	если  final_message  ==  "" :
+		date  =  location [ 0 ] [ 'last_updated' ]. сплит ( 'T' )
+		время  =  дата [ 1 ]. разделить ( "." )
+		final_message  =  f "<u> Данные по стране: </u> \ n Население: { location [ 0 ] [ 'country_population' ] :, } \ n " \
+				f "Последнее обновление: { date [ 0 ] }  { time [ 0 ] } \ n Последние данные: \ n <b>" \
+				f "Заболевших: </b> { location [ 0 ] [ 'последний' ] [ 'подтвержденный' ] :, } \ n <b> Сметрей: </b>" \
+				f " { location [ 0 ] [ 'latest' ] [ 'deaths' ] :, } "
+
+	бот . send_message ( сообщение . чат . id , final_message , parse_mode = 'html' )
+
+# Это нужно, чтобы бот работал всё время
+бот . опрос ( none_stop = True )
